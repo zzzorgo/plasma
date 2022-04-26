@@ -13,7 +13,7 @@ describe('plasma-ui: ProductCard', () => {
             <CypressTestDecorator>
                 <ProductCard
                     style={{ width: '12.25rem' }}
-                    badge={<Badge text="-20%" size="l" />}
+                    badge={<Badge text="−20%" size="l" />}
                     media={<CardMedia src={src} alt="Молоко" width="12.25rem" height="12.25rem" />}
                     text="Молоко в деревне ультрапастеризованное Моментики 925 мл"
                     price={69}
@@ -30,9 +30,10 @@ describe('plasma-ui: ProductCard', () => {
             <CypressTestDecorator>
                 <ProductCard
                     style={{ width: '12.25rem' }}
-                    badge={<Badge text="-20%" size="l" />}
+                    badge={<Badge text="−20%" size="l" />}
                     media={<CardMedia src={src} alt="Молоко" width="12.25rem" height="12.25rem" />}
                     text="Беконайзер с сыром, зеленью, большой котлет..."
+                    additionalInfo="128г"
                     price={89}
                     oldPrice={100}
                     quantity={1}
@@ -47,14 +48,33 @@ describe('plasma-ui: ProductCard', () => {
         mount(
             <CypressTestDecorator>
                 <ProductCard
+                    badge={<Badge view="secondary" text="Больше нет" size="l" />}
+                    style={{ width: '12.25rem' }}
+                    media={<CardMedia src={src} alt="Молоко" width="12.25rem" height="12.25rem" />}
+                    text="Смартфон Midnight Midnight 13 128GB Midnight"
+                    price={79_289}
+                    oldPrice={89_109}
+                    quantity={2}
+                    disabled
+                />
+            </CypressTestDecorator>,
+        );
+
+        cy.matchImageSnapshot();
+    });
+
+    it('max quantity', () => {
+        mount(
+            <CypressTestDecorator>
+                <ProductCard
                     style={{ width: '12.25rem' }}
                     badge={<Badge text="Больше нет" view="warning" size="l" />}
                     media={<CardMedia src={src} alt="Молоко" width="12.25rem" height="12.25rem" />}
                     text="Смартфон Midnight Midnight 13 128GB Midnight"
                     price={79_289}
                     oldPrice={89_109}
-                    quantity={1}
-                    disabled
+                    quantity={2}
+                    quantityMax={2}
                 />
             </CypressTestDecorator>,
         );
@@ -72,7 +92,26 @@ describe('plasma-ui: ProductCard', () => {
                     text="Большой весенний букет"
                     price={7_555}
                     quantity={1}
-                    backgroundColor="#A07589"
+                    backgroundColor="#ebca1d"
+                />
+            </CypressTestDecorator>,
+        );
+
+        cy.matchImageSnapshot();
+    });
+
+    it('readonly', () => {
+        mount(
+            <CypressTestDecorator>
+                <ProductCard
+                    style={{ width: '12.25rem' }}
+                    media={<CardMedia src={src} alt="Молоко" width="12.25rem" height="12.25rem" />}
+                    text="Смартфон Midnight Midnight 13 128GB Midnight"
+                    additionalInfo="128GB Midnight"
+                    price={7_555}
+                    readonly
+                    quantityMax={4}
+                    quantity={4}
                 />
             </CypressTestDecorator>,
         );

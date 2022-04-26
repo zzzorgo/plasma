@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Story, Meta } from '@storybook/react';
+import styled from 'styled-components';
+import { buttonBlack } from '@salutejs/plasma-tokens';
 
 import { InSpacingDecorator } from '../../helpers';
 import { Badge } from '../Badge';
@@ -21,6 +23,10 @@ interface Product_CardProps extends ProductCardProps {
     'example:cardWidth'?: string | number;
 }
 
+const CustomBadge = styled(Badge)`
+    background: ${buttonBlack};
+`;
+
 // eslint-disable-next-line @typescript-eslint/camelcase
 export const Product_Card: Story<Product_CardProps> = ({
     'media:src': imageSrc,
@@ -32,10 +38,11 @@ export const Product_Card: Story<Product_CardProps> = ({
 }) => {
     const [state, setState] = useState({
         quantity1: q,
-        quantity2: 0,
+        quantity2: 2,
         quantity3: 0,
         quantity4: 1,
         quantity5: 0,
+        quantity6: 4,
     });
 
     return (
@@ -60,12 +67,13 @@ export const Product_Card: Story<Product_CardProps> = ({
                 text="Беконайзер с сыром, зеленью, большой котлет..."
                 price={89}
                 oldPrice={100}
-                quantity={state.quantity2}
+                quantityMax={2}
+                quantity={4}
                 onQuantityChange={(quantity) => setState((s) => ({ ...s, quantity2: quantity }))}
             />
             <ProductCard
                 disabled
-                badge={<Badge text="Раскупили" size="l" />}
+                badge={<CustomBadge text="Раскупили" size="l" />}
                 media={<CardMedia src="./images/320_320_2.jpg" width="12.25rem" height="12.25rem" />}
                 text="Смартфон Midnight Midnight 13 128GB Midnight"
                 price={79_289}
@@ -75,9 +83,10 @@ export const Product_Card: Story<Product_CardProps> = ({
             />
             <ProductCard
                 disabled
-                badge={<Badge text="Раскупили" size="l" />}
+                badge={<CustomBadge text="Раскупили" size="l" />}
                 media={<CardMedia src="./images/320_320_2.jpg" width="12.25rem" height="12.25rem" />}
                 text="Смартфон Midnight Midnight 13 128GB Midnight"
+                additionalInfo="64GB"
                 price={79_289}
                 oldPrice={89_109}
                 quantity={state.quantity4}
@@ -90,7 +99,16 @@ export const Product_Card: Story<Product_CardProps> = ({
                 price={7_555}
                 quantity={state.quantity5}
                 onQuantityChange={(quantity) => setState((s) => ({ ...s, quantity5: quantity }))}
-                backgroundColor="#A07589"
+                backgroundColor="#ebca1d"
+            />
+            <ProductCard
+                media={<CardMedia src="./images/320_320_3.jpg" width="12.25rem" height="12.25rem" />}
+                text="Смартфон Midnight Midnight 13 128GB Midnight"
+                additionalInfo="128GB Midnight"
+                price={7_555}
+                readonly
+                quantityMax={4}
+                quantity={state.quantity6}
             />
         </div>
     );
@@ -106,6 +124,6 @@ Product_Card.args = {
     quantityMax: 10,
     'media:src': './images/320_320_0.jpg',
     'media:alt': '',
-    'badge:text': '-20%',
+    'badge:text': '−20%',
     'example:cardWidth': '12.25rem',
 };

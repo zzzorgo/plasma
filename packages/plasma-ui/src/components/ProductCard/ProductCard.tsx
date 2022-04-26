@@ -28,6 +28,10 @@ export interface ProductCardProps extends CardProps, DisabledProps {
      */
     text?: string;
     /**
+     * Дополнительная информация для карточки.
+     */
+    additionalInfo?: string;
+    /**
      * Актуальная цена.
      */
     price?: number;
@@ -63,8 +67,15 @@ export interface ProductCardProps extends CardProps, DisabledProps {
      * Цвет подложки и градиента карточки.
      */
     backgroundColor?: string;
+    /**
+     * Режим только для чтения
+     */
+    readonly?: boolean;
 }
 
+const StyledRoot = styled.div`
+    position: relative;
+`;
 const StyledCard = styled(Card)<{ $backgroundColor?: string }>`
     background-color: ${({ $backgroundColor }) => $backgroundColor};
     color: ${blackSecondary};
@@ -98,8 +109,10 @@ const getGradient = (backgroundColor: string) => {
     )`;
 };
 
-const StyledCardContent = styled(CardContent)<{ $backgroundColor?: string; $cover?: boolean }>`
+const StyledCardContent = styled(CardContent)<{ $backgroundColor?: string; $isValuePositive?: boolean }>`
     padding: 0.75rem;
+    padding-top: 0;
+
     border-radius: 0;
     background-color: ${({ $backgroundColor }) => $backgroundColor};
     transition: ${({ theme }) => (theme.lowPerformance ? 'unset' : 'all 0.15s ease-in-out')};
@@ -111,25 +124,21 @@ const StyledCardContent = styled(CardContent)<{ $backgroundColor?: string; $cove
         left: 0;
         right: 0;
         height: 2.5rem;
-        opacity: 0;
         transition: ${({ theme }) => (theme.lowPerformance ? 'unset' : 'all 0.15s ease-in-out')};
         background: ${({ $backgroundColor }) => $backgroundColor && getGradient($backgroundColor)};
     }
 
-    ${({ $cover }) =>
-        $cover &&
+    ${({ $isValuePositive }) =>
+        $isValuePositive &&
         css`
-            margin-top: -1.875rem;
-
-            &::after {
-                opacity: 1;
-            }
+            margin-top: -3rem;
         `}
 `;
 const StyledBadgeSlot = styled.div`
     position: absolute;
     top: 0.5rem;
     left: 0.5rem;
+    z-index: 999;
 `;
 const StyledText = styled(Footnote1)`
     ${(props) =>
@@ -190,6 +199,7 @@ export const ProductCard = forwardRef<HTMLDivElement, ProductCardProps>(function
         badge,
         media,
         text,
+        additionalInfo,
         price,
         oldPrice,
         quantity,
@@ -198,50 +208,58 @@ export const ProductCard = forwardRef<HTMLDivElement, ProductCardProps>(function
         quantityMax,
         onQuantityChange,
         disabled,
+        readonly,
         backgroundColor = '#FFFFFF',
         ...rest
     },
     ref,
 ) {
     return (
-        <StyledCard {...rest} ref={ref} disabled={disabled} $backgroundColor={backgroundColor}>
-            <CardBody>
-                {media && <StyledMediaSlot>{media}</StyledMediaSlot>}
-                {badge && <StyledBadgeSlot>{badge}</StyledBadgeSlot>}
-                <StyledCardContent
-                    $backgroundColor={backgroundColor}
-                    $cover={media !== undefined && quantity !== undefined && quantity > 0}
-                >
-                    {text && <StyledText>{text}</StyledText>}
-                    {(price !== undefined || quantity !== undefined) && (
-                        <StyledBottom>
-                            {price !== undefined && (
-                                <StyledPrices>
-                                    <StyledPrice $type={oldPrice !== undefined ? 'new' : undefined} forwardedAs={Body2}>
-                                        {price}
-                                    </StyledPrice>
-                                    {oldPrice && (
-                                        <StyledPrice $type="old" stroke forwardedAs={Caption}>
-                                            {oldPrice}
+        <StyledRoot>
+            {badge && <StyledBadgeSlot>{badge}</StyledBadgeSlot>}
+            <StyledCard {...rest} ref={ref} disabled={disabled} $backgroundColor={backgroundColor}>
+                <CardBody>
+                    {media && <StyledMediaSlot>{media}</StyledMediaSlot>}
+                    <StyledCardContent
+                        $isValuePositive={!readonly && !!quantity && quantity > 0}
+                        $backgroundColor={backgroundColor}
+                    >
+                        {text && <StyledText>{text}</StyledText>}
+                        {additionalInfo && <StyledText>{additionalInfo}</StyledText>}
+                        {(price !== undefined || quantity !== undefined) && (
+                            <StyledBottom>
+                                {price !== undefined && (
+                                    <StyledPrices>
+                                        <StyledPrice
+                                            $type={oldPrice !== undefined ? 'new' : undefined}
+                                            forwardedAs={Body2}
+                                        >
+                                            {price}
                                         </StyledPrice>
-                                    )}
-                                </StyledPrices>
-                            )}
-                            {quantity !== undefined && (
-                                <StyledStepper
-                                    value={quantity}
-                                    step={quantityStep}
-                                    min={quantityMin}
-                                    max={quantityMax}
-                                    onChange={onQuantityChange}
-                                    $onTop={price !== undefined && quantity === 0}
-                                    disabled={disabled}
-                                />
-                            )}
-                        </StyledBottom>
-                    )}
-                </StyledCardContent>
-            </CardBody>
-        </StyledCard>
+                                        {oldPrice && (
+                                            <StyledPrice $type="old" stroke forwardedAs={Caption}>
+                                                {oldPrice}
+                                            </StyledPrice>
+                                        )}
+                                    </StyledPrices>
+                                )}
+                                {!disabled && quantity !== undefined && (
+                                    <StyledStepper
+                                        readonly={readonly}
+                                        value={quantity}
+                                        step={quantityStep}
+                                        min={quantityMin}
+                                        max={quantityMax}
+                                        onChange={onQuantityChange}
+                                        $onTop={readonly || (price !== undefined && quantity === 0)}
+                                        disabled={disabled}
+                                    />
+                                )}
+                            </StyledBottom>
+                        )}
+                    </StyledCardContent>
+                </CardBody>
+            </StyledCard>
+        </StyledRoot>
     );
 });

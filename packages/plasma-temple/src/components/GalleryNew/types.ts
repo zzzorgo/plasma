@@ -1,4 +1,4 @@
-import { AnyObject } from '../../types';
+import { AnyObject, AssistantInstance } from '../../types';
 import { CardEntity } from '../Card';
 
 export interface GalleryState {
@@ -48,7 +48,16 @@ interface GalleryCardProps<Id = string, T extends AnyObject = AnyObject> {
 // TODO: Заменить на GalleryCardProps после удаления старого интерфейса components/GalleryCard/types.ts
 export type { GalleryCardProps as GalleryNewCardProps };
 
-export interface SingleGalleryProps<Id = string, T extends AnyObject = AnyObject> {
+export interface VoiceNavigationProps {
+    /** Инстанс ассистента. Используется в голосовой навигации (не работает для мобильных устройств). */
+    assistant?: AssistantInstance;
+    /** Размер шага (количество карточек в галереи) при горизонтальной прокрутке */
+    voiceStepSizeX?: number;
+    /** Размер шага (количество галерей) при вертикальной прокрутке */
+    voiceStepSizeY?: number;
+}
+
+export interface SingleGalleryProps<Id = string, T extends AnyObject = AnyObject> extends VoiceNavigationProps {
     gallery: SingleGalleryEntity<Id, T>;
     galleryIndex: number;
     activeCard: number;
@@ -60,7 +69,7 @@ export interface SingleGalleryProps<Id = string, T extends AnyObject = AnyObject
     onCardClick?: OnCardClickFn<Id, T>;
 }
 
-export interface MultiGalleryProps<Id = string, T extends AnyObject = AnyObject> {
+export interface MultiGalleryProps<Id = string, T extends AnyObject = AnyObject> extends VoiceNavigationProps {
     items: SingleGalleryEntity<Id, T>[];
     isActive: boolean;
     state: GalleryState;
